@@ -27,7 +27,7 @@ class _Loader extends StatelessWidget {
         Future.delayed(const Duration(milliseconds: 300));
         return messages[step];
       },
-    ).take(messages.length);
+    ); // .take(messages.length);
   }
 
   @override
