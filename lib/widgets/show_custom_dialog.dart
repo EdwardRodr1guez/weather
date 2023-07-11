@@ -5,7 +5,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:weather/backend/apis/open_weather_service.dart';
 
+//this class handles dialogs(alertdialogos) when they are required to provide more information to the user
+
 class ShowCustomDialog {
+  /*
+  first method:
+  the alertdialog is shown when location is not found, maybe because the user didnt approve permission.
+  two buttons are displayed, maybe later and share my location. first button only 
+  closes the alertdialog while second handle again the permission logic. 
+  if location permisson are approved a provider starts to fetch climate
+  data. then the popup is closed 
+  */
   static ShowCustomLocationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -20,7 +30,6 @@ class ShowCustomDialog {
             FilledButton(
               child: const Text('Quizás luego '),
               onPressed: () {
-                // Código a ejecutar al presionar el botón Cancelar
                 Navigator.of(context).pop(); // Cerrar el diálogo
               },
             ),
@@ -56,6 +65,11 @@ class ShowCustomDialog {
     );
   }
 
+  /*
+  second method:
+  this alert dialog is shown when the user does not approve location permission but anyway he/she presses 
+  the refresh weather data button.  
+  */
   static ShowCustomNotLocationFoundDialog(BuildContext context) {
     showDialog(
       context: context,

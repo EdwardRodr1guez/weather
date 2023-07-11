@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weather/widgets/show_custom_dialog.dart';
 
+/*
+  class to handle location Permission. I has a function which charges of check and/or request permissions.
+  If the location permissions are not given, a custom pop up is shown indicating it and also it recommends to the user
+  enable later location permission or search a weather for a city he/she chooses.
+
+*/
+
 class LocationService {
   static Future<bool> handleLocationPermission(BuildContext context) async {
     bool serviceEnabled;

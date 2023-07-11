@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather/backend/apis/open_weather_service.dart';
-import 'package:weather/provider/favorites.dart';
+import 'package:weather/provider/favorites_provider.dart';
 
 import 'package:weather/screens/weather_screen.dart';
 import 'package:weather/config/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding
-      .ensureInitialized(); //localization permission is requested for fetching data
+      .ensureInitialized(); //ensure the app is corrected initialized
   runApp(const MyApp()); //Run the app
 }
 
@@ -18,6 +18,9 @@ class MyApp extends StatelessWidget {
   /*
   This widget is the root of your application. Material app wraps
   the entire application. WeatherScreen is a default page. 
+
+  Multiprovider allow listens for changes in all the application,
+  openweatherservice for fetching weather and favoritesprovider to handle favorite cities of the user
   */
 
   @override

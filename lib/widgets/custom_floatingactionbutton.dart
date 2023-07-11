@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather/backend/apis/open_weather_service.dart';
-import 'package:weather/provider/favorites.dart';
+import 'package:weather/provider/favorites_provider.dart';
 import 'package:weather/widgets/show_custom_dialog.dart';
 
 class CustomFloatingActionButtons extends StatefulWidget {
@@ -22,7 +20,7 @@ class CustomFloatingActionButtons extends StatefulWidget {
 class _CustomFloatingActionButtonsState
     extends State<CustomFloatingActionButtons> {
   bool fetchingWeather = false;
-  int selected = -1;
+
   @override
   Widget build(BuildContext context) {
     final titleStyle = Theme.of(context).textTheme.titleLarge;
@@ -47,7 +45,6 @@ class _CustomFloatingActionButtonsState
                   builder: (context) {
                     return StatefulBuilder(
                         builder: (context, StateSetter setStatee) {
-                      int status = -1;
                       return AlertDialog(
                         contentPadding: const EdgeInsetsDirectional.symmetric(
                             horizontal: 10),
@@ -78,9 +75,7 @@ class _CustomFloatingActionButtonsState
                                                   listen: false)
                                               .getInverseGeocoding(
                                                   query: value);
-                                      if (response != null) {
-                                        log(response.toString());
-                                      }
+                                      if (response != null) {}
                                       contador = List.generate(
                                           Provider.of<OpenWeatherService>(
                                                       context,
@@ -90,8 +85,6 @@ class _CustomFloatingActionButtonsState
                                               0,
                                           (index) => false);
                                     }
-
-                                    //log("No hay resultados");
                                   },
                                   decoration: InputDecoration(
                                       suffixIcon: Container(
@@ -149,41 +142,27 @@ class _CustomFloatingActionButtonsState
                                                       listen: true)
                                                   .directGeocodingModel;
 
-                                              /////////////////////////
-
                                               return ListTile(
                                                 trailing: IconButton(
                                                   onPressed: () async {
-                                                    selected = index;
-                                                    status = index;
-                                                    contador[index] =
-                                                        !contador[index];
-                                                    log("contador ${contador.toString()}");
-                                                    log("contador $contador");
-                                                    //setState(() {});
-                                                    setStatee(() {});
-                                                    log(Provider.of<
-                                                                FavoritesProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .likes
-                                                        .toString());
+                                                    /*contador[index] =
+                                                        !contador[index];*/
+                                                    contador[index] = true;
+                                                    FocusScope.of(context)
+                                                        .unfocus();
 
-                                                    /*
-                                                    Esto se cambió la madrugada 10/07/2024
-                                                    Provider.of<FavoritesProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .index = index;
-                                                    Provider.of<FavoritesProvider>(
-                                                                context,
-                                                                listen: false)
-                                                            .likes[
-                                                        index] = !Provider.of<
-                                                                FavoritesProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .likes[index]; */
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .clearSnackBars();
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(const SnackBar(
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                    3000),
+                                                            content: Text(
+                                                                "Añadido a favoritos, para deshacer cambios dirigirse a 'Mis ciudades' ")));
+                                                    setStatee(() {});
 
                                                     await Provider.of<
                                                                 FavoritesProvider>(
@@ -198,22 +177,15 @@ class _CustomFloatingActionButtonsState
                                                               filter[index]
                                                                   ["lon"]
                                                             ].toString());
-                                                    await Provider.of<
-                                                                FavoritesProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .obtenerListaDesdeSharedPreferences();
+                                                    if (mounted) {
+                                                      await Provider.of<
+                                                                  FavoritesProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .obtenerListaDesdeSharedPreferences();
+                                                    }
                                                   },
-                                                  icon: contador[index] ==
-                                                          true /*Provider.of<FavoritesProvider>(
-                                                                  context,
-                                                                  listen: false)
-                                                              .index ==
-                                                          index*/ /*(Provider.of<FavoritesProvider>(
-                                                                  context,
-                                                                  listen: false)
-                                                              .index ==
-                                                          index) este nos sirve */
+                                                  icon: contador[index] == true
                                                       ? const Icon(
                                                           Icons.favorite,
                                                           color: Colors.red)
@@ -277,11 +249,7 @@ class _CustomFloatingActionButtonsState
                                                       ),
                                                     ],
                                                   ),
-                                                )
-
-                                                /*Text(
-                                                "data" /*Text(filter![index].toString()*/)*/
-                                                ,
+                                                ),
                                               );
                                             }),
                                       )
@@ -294,7 +262,10 @@ class _CustomFloatingActionButtonsState
                       );
                     });
                   },
-                );
+                ).then((value) {
+                  Provider.of<OpenWeatherService>(context, listen: false)
+                      .directGeocodingModel = [];
+                });
               },
               label: const Text("Buscar Ciudad")),
         const SizedBox(
@@ -310,14 +281,12 @@ class _CustomFloatingActionButtonsState
             child: FloatingActionButton.extended(
                 heroTag: 2,
                 onPressed: () async {
-                  log("botón oprimido");
                   final openWeatherService =
                       Provider.of<OpenWeatherService>(context, listen: false);
                   if (openWeatherService.latitude == "") {
                     ShowCustomDialog.ShowCustomNotLocationFoundDialog(context);
                   } else {
                     fetchingWeather = true;
-                    log("fetcheando clima");
 
                     await openWeatherService.getClimateNow(
                         lat: openWeatherService.latitude,

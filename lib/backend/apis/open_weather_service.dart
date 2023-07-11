@@ -3,11 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:weather/backend/models/climate_forecasting_model.dart';
 import 'package:weather/backend/models/climate_now_model.dart';
 
+//openweatheservice is a provider which handle weatherdata
+
 class OpenWeatherService extends ChangeNotifier {
+  //Configure dio package to make http request
   final dio = Dio(BaseOptions(
     baseUrl: "https://api.openweathermap.org/data/2.5",
   ));
 
+  //variables used by the provider
   ClimateNowModel? climateNowModel;
   ClimateForecastingModel? climateForecastingModel;
   List? directGeocodingModel;
@@ -15,6 +19,9 @@ class OpenWeatherService extends ChangeNotifier {
   String? latitude;
   String? longitude;
 
+  //methods of the provider
+
+  //method for get the climate now
   Future getClimateNow({String? lat, String? lon}) async {
     final response = await dio.get("/weather", queryParameters: {
       "lat": lat ?? "7.907070360220543",
@@ -32,6 +39,7 @@ class OpenWeatherService extends ChangeNotifier {
     return climateNowModel;
   }
 
+  //method for get the climate forecasting in the next days
   Future getClimateForecast({String? lat, String? lon}) async {
     final response = await dio.get("/forecast", queryParameters: {
       "lat": lat ?? "7.907070360220543",
@@ -46,6 +54,7 @@ class OpenWeatherService extends ChangeNotifier {
     return climateForecastingModel;
   }
 
+  //method for inversegeocoding (the input is a name of the city and the output its coordinates)
   Future getInverseGeocoding({required String query}) async {
     final dioGeo = Dio(BaseOptions(
       baseUrl: "http://api.openweathermap.org/geo/1.0",
